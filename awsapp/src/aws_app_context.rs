@@ -1,9 +1,9 @@
-use crate::apps::Application;
-use std::sync::RwLockReadGuard;
-use std::{sync::RwLock};
-use std::collections::HashMap;
-use lazy_static::lazy_static;
 use crate::apps;
+use crate::apps::Application;
+use lazy_static::lazy_static;
+use std::collections::HashMap;
+use std::sync::RwLock;
+
 
 pub struct AwsAppContext {
     apps: RwLock<HashMap<String, apps::Application>>,
@@ -14,15 +14,14 @@ lazy_static! {
 }
 
 impl AwsAppContext {
-    pub  fn new() -> RwLock<Self> {
+    pub fn new() -> RwLock<Self> {
         RwLock::new(Self {
             apps: RwLock::new(HashMap::new()),
         })
     }
 
-    pub fn init()  {
-        let w =APPCONTEXT.write().unwrap();
-        let mut a = w.apps.write().unwrap();
+    pub fn init(&self) {
+        let mut a = self.apps.write().unwrap();
         a.insert(
             String::from("queue"),
             apps::Application {
@@ -40,21 +39,10 @@ impl AwsAppContext {
         ()
     }
 
-    pub fn get_apps(&self) -> Vec<Application>{
-        let m: RwLockReadGuard<'static, AwsAppContext> = APPCONTEXT.read().unwrap();
-        let apps = m.apps
-            .read()
-            .unwrap();
-        
-        apps.clone()
-            .into_iter()    
-            .map(|(_,app)|app)
-            .collect()
+    pub fn get_apps(&self) -> Vec<Application> {
+        let apps = self.apps.read().unwrap();
+
+        apps.clone().into_iter().map(|(_, app)| app).collect()
     }
 
-    pub fn get() -> RwLockReadGuard<'static, AwsAppContext> {
-        let m: RwLockReadGuard<'static, AwsAppContext> = APPCONTEXT.read().unwrap();
-        m
-    }    
 }
-
