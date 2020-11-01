@@ -1,6 +1,6 @@
 # Background
 
-A learning project with this following context - build a toy v8 isolate based compute platform based
+A learning project with this following context - build a toy v8 isolate based compute platform
 
 # Reference
 
