@@ -1,6 +1,6 @@
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct AppVersion {
     pub major: u8,
     pub minor: u8,
@@ -8,7 +8,7 @@ pub struct AppVersion {
     pub commit_id: String,
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Application {
     pub id: String,
     pub name: String,

@@ -21,8 +21,8 @@ impl AwsAppContext {
     }
 
     pub fn init(&self) {
-        let mut a = self.apps.write().unwrap();
-        a.insert(
+        let mut apps = self.apps.write().unwrap();
+        apps.insert(
             String::from("queue"),
             apps::Application {
                 description: String::from("manages queuing"),
@@ -41,8 +41,15 @@ impl AwsAppContext {
 
     pub fn get_apps(&self) -> Vec<Application> {
         let apps = self.apps.read().unwrap();
-
         apps.clone().into_iter().map(|(_, app)| app).collect()
+    }
+
+    pub fn save_app(&self, app: &Application) {
+        let mut apps = self.apps.write().unwrap();
+        apps.insert(
+            app.id.clone(),
+            app.clone());
+        ()
     }
 
 }
