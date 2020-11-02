@@ -21,6 +21,8 @@ iwr http://localhost:8080/apps/2 -Method PUT -Body '{"id":"2","name":"app2","ver
 iwr http://localhost:8080/apps
 ```
 
+3. Pull down javascript file from s3 to run
+
 # Reference
 
 https://omarabid.com/rust-intro
