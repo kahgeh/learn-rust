@@ -14,5 +14,6 @@ pub struct Application {
     pub name: String,
     pub version: AppVersion,
     pub description: String,
+    pub remote_path: String,
 }
 

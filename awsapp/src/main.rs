@@ -1,5 +1,6 @@
 mod apps;
 mod aws_app_context;
+use actix_web::web::scope;
 use actix_web::{App, HttpResponse, HttpServer, Responder, web::{Json, Path}, get,put};
 use crate::apps::Application;
 use crate::aws_app_context::APPCONTEXT;
@@ -21,11 +22,12 @@ async fn save_app(body:Json<Application>, _:Path<String>) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    APPCONTEXT.read().unwrap().init();
+    APPCONTEXT.read().unwrap().init().await;
     HttpServer::new(|| 
             App::new()
-                .service(get_apps)
-                .service(save_app))
+                .service(scope("/v1")
+                        .service(get_apps)
+                        .service(save_app)))
         .bind("127.0.0.1:8080")?
         .run()
         .await
