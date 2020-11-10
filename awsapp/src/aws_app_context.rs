@@ -1,3 +1,4 @@
+use std::error::Error;
 use crate::apps;
 use crate::apps::Application;
 use lazy_static::lazy_static;
@@ -25,8 +26,8 @@ impl AwsAppContext {
         })
     }
 
-    pub async fn init(&self) {
-        let mut apps = self.apps.write().unwrap();
+    pub async fn init(&self) -> Result<(),Box<dyn Error+'_>>{
+        let mut apps = self.apps.write()?;
 
         let s3_client = S3Client::new_with(
             HttpClient::new().expect("failed to create request dispatcher"),
@@ -46,29 +47,30 @@ impl AwsAppContext {
                 commit_id: String::from("213123123"),
             },
         };
-        let bucket_name = env::var("BUCKET_NAME").unwrap();
+        let bucket_name = env::var("BUCKET_NAME")?;
         let result = s3_client
             .get_object(GetObjectRequest {
                 bucket: String::from(bucket_name),
                 key: app.remote_path.clone(),
                 ..GetObjectRequest::default()
             })
-            .await
-            .unwrap();
+            .await?;
 
         let bs= result
                     .body
                     .unwrap();
 
-        let mut file = std::fs::File::create(std::path::Path::new("code.js")).unwrap();
+        let mut file = std::fs::File::create(std::path::Path::new("code.js"))?;
         
         bs.for_each(|b|{
             let bytes = b.unwrap();
             file.write_all(&bytes.to_vec()).expect("error");
             future::ready(())
         }).await;
+        
         apps.insert(app.id.clone(), app);
-        ()
+
+        Ok(())
     }
 
     pub fn get_apps(&self) -> Vec<Application> {
