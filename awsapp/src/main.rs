@@ -22,7 +22,14 @@ async fn save_app(body:Json<Application>, _:Path<String>) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    APPCONTEXT.read().unwrap().init().await;
+    let context=APPCONTEXT.read().unwrap();
+
+    let init_result = context.init().await;
+    match init_result {
+        Ok(())=> println!("initialised"),
+        Err(e)=> println!("error initialising {:?}", e)
+    }
+
     HttpServer::new(|| 
             App::new()
                 .service(scope("/v1")

@@ -1,5 +1,5 @@
 use std::error::Error;
-use crate::apps;
+use crate::apps::{self, InitialisationError};
 use crate::apps::Application;
 use lazy_static::lazy_static;
 use rusoto_core::{credential::ChainProvider, Region};
@@ -47,7 +47,14 @@ impl AwsAppContext {
                 commit_id: String::from("213123123"),
             },
         };
-        let bucket_name = env::var("BUCKET_NAME")?;
+        let bucket_name = match env::var("BUCKET_NAME"){
+            Ok(s)=>s,
+            Err(e)=> return Err(Box::new(InitialisationError {
+                step_name: String::from("read_bucket_name_from_environment_variable"),
+                reason:format!("{:?}",e),
+                value:String::from("BUCKET_NAME")
+            }))
+        };
         let result = s3_client
             .get_object(GetObjectRequest {
                 bucket: String::from(bucket_name),
