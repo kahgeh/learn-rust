@@ -1,3 +1,6 @@
+
+use deno_core::Op;
+use deno_core::JsRuntime;
 use std::error::Error;
 use crate::apps::{self, InitialisationError};
 use crate::apps::Application;
@@ -10,6 +13,7 @@ use std::{collections::HashMap, io::Write};
 use std::sync::RwLock;
 use futures::{StreamExt, future};
 use std::env;
+
 
 pub struct AwsAppContext {
     apps: RwLock<HashMap<String, apps::Application>>,
@@ -77,6 +81,26 @@ impl AwsAppContext {
         
         apps.insert(app.id.clone(), app);
 
+        let mut runtime = JsRuntime::new(Default::default());
+        
+        runtime.register_op(
+            "op_print",
+            // The op_fn callback takes a state object OpState
+            // and a vector of ZeroCopyBuf's, which are mutable references
+            // to ArrayBuffer's in JavaScript.
+            |_state, zero_copy| {
+              let mut out = std::io::stdout();
+        
+              // Write the contents of every buffer to stdout
+              for buf in zero_copy {
+                out.write_all(&buf).unwrap();
+              }
+        
+              Op::Sync(Box::new([])) // No meaningful result
+            },
+          );
+        
+        runtime.execute("sum.js", include_str!("../sum.js")).unwrap();
         Ok(())
     }
 
