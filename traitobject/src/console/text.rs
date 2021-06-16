@@ -1,4 +1,4 @@
-use crate::draw_trait::Draw;
+use crate::draw::Draw;
 
 pub struct Text {
     text: String,

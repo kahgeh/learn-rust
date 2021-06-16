@@ -1,6 +1,5 @@
-pub trait Draw {
-    fn draw(&self);
-}
+pub use super::draw::Draw;
+pub use self::console::{Text,Triangle};
 
 pub struct Screen {
     pub components: Vec<Box<dyn Draw>>,
