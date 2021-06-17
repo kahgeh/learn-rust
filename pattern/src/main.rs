@@ -28,7 +28,6 @@ fn destructure_patterns (pt:&Point){
     }
 }
 
-
 fn pattern_with_bindings (){
     enum Message {
         Hello { id:i32 },

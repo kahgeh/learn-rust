@@ -1,7 +1,7 @@
 use std::env;
 use std::error::Error;
-use std::fs;
 use std::fmt;
+use std::fs;
 
 #[cfg(test)]
 mod tests {
