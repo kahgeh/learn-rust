@@ -1,0 +1,18 @@
+use tokio::net::TcpListener;
+use tokio::io;
+
+#[tokio::main]
+async fn main()->io::Result<()>{
+    let listener = TcpListener::bind("0.0.0.0:6142").await.unwrap();
+
+    loop {
+        let (mut socket,_) = listener.accept().await?;
+
+        tokio::spawn(async move {
+            let (mut rd, mut wr) = socket.split();
+            if io::copy(&mut rd, &mut wr).await.is_err() {
+                eprintln!("failed to copy")
+            }
+        });
+    }
+}
